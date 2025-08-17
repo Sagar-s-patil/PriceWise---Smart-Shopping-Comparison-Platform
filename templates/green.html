@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌱 Sustainable Choice Advisor</title>
+    <!-- Chart.js library for creating charts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- Chart.js Datalabels Plugin for displaying labels on chart segments -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styles */
+        :root {
+            --primary-color: #2e7d32;
+            --primary-light: #4CAF50;
+            --primary-dark: #1B5E20;
+            --secondary-color: #FFC107;
+            --accent-color: #2196F3;
+            --danger-color: #f44336;
+            --text-dark: #263238;
+            --text-medium: #455A64;
+            --text-light: #78909C;
+            --bg-light: #f5f5f5;
+            --bg-white: #ffffff;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--bg-white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Content Styles */
+        .content {
+            padding: 40px;
+        }
+
+        /* Product Section */
+        .product-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .product-card {
+            background: var(--bg-white);
+            border-radius: var(--border-radius-md);
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .product-card h3 {
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .product-card h3 i {
+            font-size: 1.2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-medium);
+            font-size: 0.95em;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius-sm);
+            font-size: 16px;
+            transition: var(--transition);
+            background: var(--bg-light);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        /* Slider Styles */
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            transition: var(--transition);
+        }
+
+        .slider:hover {
+            opacity: 0.8;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: var(--transition);
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: none;
+            transition: var(--transition);
+        }
+
+        .slider::-moz-range-thumb:hover {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+
+        .slider-value {
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-top: 8px;
+            font-size: 1.1em;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        /* Button Styles */
+        .compare-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 6px rgba(76, 175, 80, 0.3);
+        }
+
+        .compare-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .compare-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Result Section */
+        .result-section {
+            margin-top: 40px;
+            padding: 40px;
+            background: var(--bg-white);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-md);
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-section h2 {
+            text-align: center;
+            color: var(--primary-dark);
+            margin-bottom: 30px;
+            font-size: 2em;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .result-section h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-light), var(--accent-color));
+            border-radius: 2px;
+        }
+
+        /* Winner Card */
+        .winner-card {
+            background: var(--bg-white);
+            border-radius: var(--border-radius-md);
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+            border: 2px solid var(--primary-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .winner-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-light), var(--accent-color));
+        }
+
+        .winner-card h3 {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .eco-badge {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: var(--primary-dark);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2em;
+            margin: 15px auto;
+            display: inline-block;
+            border: 2px dashed var(--primary-light);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .score-display {
+            font-size: 3.5em;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin: 15px 0;
+            position: relative;
+            display: inline-block;
+        }
+
+        
+
+        .winner-card p {
+            color: var(--text-medium);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .chart-container {
+            background: var(--bg-white);
+            border-radius: var(--border-radius-md);
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .chart-container:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .chart-container h3 {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Environmental Impact */
+        .environmental-impact {
+            background: var(--bg-white);
+            border-radius: var(--border-radius-md);
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .environmental-impact h3 {
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .impact-item {
+            background: var(--bg-light);
+            border-radius: var(--border-radius-sm);
+            padding: 25px;
+            border-left: 4px solid var(--primary-light);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .impact-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .impact-item h4 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1em;
+        }
+
+        .impact-icon {
+            font-size: 1.5em;
+            width: 40px;
+            height: 40px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+        }
+
+        .impact-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .impact-description {
+            color: var(--text-medium);
+            line-height: 1.7;
+            font-size: 0.95em;
+        }
+
+        /* Carbon Footprint */
+        .carbon-footprint {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffecb3 100%);
+            border: 2px solid #ffb74d;
+            border-radius: var(--border-radius-md);
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carbon-footprint::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            z-index: 1;
+        }
+
+        .carbon-footprint-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .carbon-footprint h3 {
+            color: #e65100;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.4em;
+        }
+
+        .carbon-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .carbon-stat {
+            background: var(--bg-white);
+            padding: 20px;
+            border-radius: var(--border-radius-sm);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .carbon-stat:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .carbon-stat .value {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #e65100;
+            margin-bottom: 5px;
+        }
+
+        .carbon-stat .label {
+            color: var(--text-medium);
+            font-size: 0.95em;
+        }
+
+        /* Savings Highlight */
+        .savings-highlight {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--border-radius-md);
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .savings-highlight::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            z-index: 1;
+        }
+
+        .savings-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .savings-highlight h3 {
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .savings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .savings-item {
+            background: var(--bg-white);
+            padding: 25px 15px;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .savings-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .savings-item .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+
+        .savings-item .value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+
+        .savings-item .label {
+            color: var(--text-medium);
+            font-size: 0.95em;
+        }
+
+        /* Tips Section */
+        .tips-section {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-radius: var(--border-radius-md);
+            padding: 30px;
+            margin-top: 40px;
+            border-left: 4px solid #9c27b0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tips-section::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            z-index: 1;
+        }
+
+        .tips-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .tips-section h4 {
+            color: #7b1fa2;
+            margin-bottom: 25px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tip-item {
+            background: var(--bg-white);
+            padding: 20px;
+            border-radius: var(--border-radius-sm);
+            border-left: 3px solid #9c27b0;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tip-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .tip-item p {
+            color: var(--text-medium);
+            line-height: 1.7;
+        }
+
+        .tip-item p strong {
+            color: #7b1fa2;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .content {
+                padding: 30px;
+            }
+            
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .header p {
+                font-size: 1em;
+            }
+            
+            .product-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .impact-grid, .carbon-stats, .savings-grid, .tips-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .result-section {
+                padding: 20px;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        /* Tooltip Styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--text-dark);
+            color: #fff;
+            text-align: center;
+            border-radius: var(--border-radius-sm);
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9em;
+            font-weight: normal;
+        }
+
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--text-dark) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Badge for new features */
+        .new-badge {
+            background: var(--accent-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: bold;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-leaf"></i> Sustainable Choice Advisor</h1>
+                <p>Make informed, eco-conscious shopping decisions with our comprehensive environmental impact analysis tool</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="product-section">
+                <div class="product-card">
+                    <h3><i class="fas fa-tag"></i> Product A</h3>
+                    <div class="form-group">
+                        <label for="nameA">Product Name <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltip-text">Enter the name of the first product you want to compare</span></span></label>
+                        <input type="text" id="nameA" placeholder="e.g., Organic Cotton T-Shirt" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="priceA">Price (₹) <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltip-text">Enter the price in Indian Rupees</span></span></label>
+                        <input type="number" id="priceA" placeholder="999" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingA">Shipping Distance <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltip-text">How far did this product travel to reach you?</span></span></label>
+                        <select id="shippingA">
+                            <option value="5">Local (0-50 km)</option>
+                            <option value="3">Regional (50-500 km)</option>
+                            <option value="1">National (500+ km)</option>
+                            <option value="0">International (1000+ km)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="packagingA">Packaging Type <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltip-text">What kind of packaging does this product use?</span></span></label>
+                        <select id="packagingA">
+                            <option value="5">Biodegradable/Reusable</option>
+                            <option value="3">Recyclable</option>
+                            <option value="1">Standard</option>
+                            <option value="0">Excessive/Non-recyclable</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="materialA">Material Sustainability (0-10) <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltip-text">How sustainable are the materials used in this product?</span></span></label>
+                        <div class="slider-container">
+                            <input type="range" id="materialA" class="slider" min="0" max="10" value="5" oninput="updateSliderValue('materialA')">
+                            <div class="slider-value" id="materialA-value">5</div>
+                            <div class="slider-labels">
+                                <span>Synthetic</span>
+                                <span>Mixed</span>
+                                <span>Organic</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="durabilityA">Durability Score (1-10 years) <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltip-text">How long is this product expected to last?</span></span></label>
+                        <div class="slider-container">
+                            <input type="range" id="durabilityA" class="slider" min="1" max="10" value="5" oninput="updateSliderValue('durabilityA', ' years')">
+                            <div class="slider-value" id="durabilityA-value">5 years</div>
+                            <div class="slider-labels">
+                                <span>1 year</span>
+                                <span>5 years</span>
+                                <span>10+ years</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <h3><i class="fas fa-tag"></i> Product B</h3>
+                    <div class="form-group">
+                        <label for="nameB">Product Name</label>
+                        <input type="text" id="nameB" placeholder="e.g., Regular Cotton T-Shirt" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="priceB">Price (₹)</label>
+                        <input type="number" id="priceB" placeholder="599" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingB">Shipping Distance</label>
+                        <select id="shippingB">
+                            <option value="5">Local (0-50 km)</option>
+                            <option value="3">Regional (50-500 km)</option>
+                            <option value="1">National (500+ km)</option>
+                            <option value="0">International (1000+ km)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="packagingB">Packaging Type</label>
+                        <select id="packagingB">
+                            <option value="5">Biodegradable/Reusable</option>
+                            <option value="3">Recyclable</option>
+                            <option value="1">Standard</option>
+                            <option value="0">Excessive/Non-recyclable</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="materialB">Material Sustainability (0-10)</label>
+                        <div class="slider-container">
+                            <input type="range" id="materialB" class="slider" min="0" max="10" value="5" oninput="updateSliderValue('materialB')">
+                            <div class="slider-value" id="materialB-value">5</div>
+                            <div class="slider-labels">
+                                <span>Synthetic</span>
+                                <span>Mixed</span>
+                                <span>Organic</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="durabilityB">Durability Score (1-10 years)</label>
+                        <div class="slider-container">
+                            <input type="range" id="durabilityB" class="slider" min="1" max="10" value="5" oninput="updateSliderValue('durabilityB', ' years')">
+                            <div class="slider-value" id="durabilityB-value">5 years</div>
+                            <div class="slider-labels">
+                                <span>1 year</span>
+                                <span>5 years</span>
+                                <span>10+ years</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="compare-btn" onclick="compareProducts()">
+                <i class="fas fa-balance-scale"></i> Compare Products
+            </button>
+
+            <div id="resultSection" class="result-section">
+                <h2>Comparison Results </h2>
+
+                <div class="winner-card">
+                    <h3><i class="fas fa-trophy"></i> Sustainable Champion: <span id="winnerName"></span></h3>
+                    <div class="eco-badge"><i class="fas fa-leaf"></i> Eco-Score</div>
+                    <div class="score-display" id="winnerScore"></div>
+                    <p id="winnerMessage"></p>
+                </div>
+
+                <div class="charts-section">
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-pie"></i> Product A Sustainability Breakdown</h3>
+                        <canvas id="productAPieChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3><i class="fas fa-chart-pie"></i> Product B Sustainability Breakdown</h3>
+                        <canvas id="productBPieChart"></canvas>
+                    </div>
+                    <div class="chart-container" style="grid-column: 1 / -1;">
+                        <h3><i class="fas fa-chart-bar"></i> Environmental Impact Comparison</h3>
+                        <canvas id="impactBarChart"></canvas>
+                    </div>
+                    
+                </div>
+
+                <div class="environmental-impact">
+                    <h3><i class="fas fa-globe-asia"></i> Detailed Environmental Impact</h3>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <h4><div class="impact-icon"><i class="fas fa-smog"></i></div> Carbon Footprint</h4>
+                            <div class="impact-value" id="carbonImpact"></div>
+                            <p class="impact-description">Estimated CO2e emissions associated with production and transportation of the more sustainable choice.</p>
+                        </div>
+                        <div class="impact-item">
+                            <h4><div class="impact-icon"><i class="fas fa-tint"></i></div> Water Usage</h4>
+                            <div class="impact-value" id="waterImpact"></div>
+                            <p class="impact-description">Volume of water consumed in the more sustainable product's lifecycle.</p>
+                        </div>
+                        <div class="impact-item">
+                            <h4><div class="impact-icon"><i class="fas fa-trash"></i></div> Waste Generated</h4>
+                            <div class="impact-value" id="wasteImpact"></div>
+                            <p class="impact-description">Amount of waste produced, including packaging and end-of-life disposal for the better choice.</p>
+                        </div>
+                        <div class="impact-item">
+                            <h4><div class="impact-icon"><i class="fas fa-recycle"></i></div> Recyclability</h4>
+                            <div class="impact-value" id="recyclabilityImpact"></div>
+                            <p class="impact-description">Percentage of the more sustainable product and its packaging that can be recycled.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carbon-footprint">
+                    <div class="carbon-footprint-content">
+                        <h3><i class="fas fa-fire"></i> Carbon Footprint Breakdown</h3>
+                        <p class="mb-20">Understanding where the carbon emissions come from helps identify areas for improvement in product sustainability.</p>
+                        <div class="carbon-stats">
+                            <div class="carbon-stat">
+                                <div class="value" id="carbonMaterial"></div>
+                                <div class="label">Material Production</div>
+                            </div>
+                            <div class="carbon-stat">
+                                <div class="value" id="carbonShipping"></div>
+                                <div class="label">Shipping & Transport</div>
+                            </div>
+                            <div class="carbon-stat">
+                                <div class="value" id="carbonPackaging"></div>
+                                <div class="label">Packaging</div>
+                            </div>
+                            <div class="carbon-stat">
+                                <div class="value" id="carbonDurability"></div>
+                                <div class="label">Durability Impact</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                          
+
+                <div class="tips-section">
+                    <div class="tips-content">
+                        <h4><i class="fas fa-lightbulb"></i> Tips for Sustainable Choices</h4>
+                        <p class="mb-20">Here are some practical tips to help you make more environmentally friendly purchasing decisions:</p>
+                        <div class="tips-grid">
+                            <div class="tip-item">
+                                <p><strong>Look for Certifications:</strong> Prioritize products with recognized eco-labels (e.g., GOTS for textiles, FSC for wood, Energy Star for appliances).</p>
+                            </div>
+                            <div class="tip-item">
+                                <p><strong>Durability Over Disposable:</strong> Invest in high-quality, long-lasting items even if they cost more upfront—they'll save money and reduce waste over time.</p>
+                            </div>
+                            <div class="tip-item">
+                                <p><strong>Minimal Packaging:</strong> Choose products with recyclable, recycled, or minimal packaging to significantly reduce waste.</p>
+                            </div>
+                            <div class="tip-item">
+                                <p><strong>Local Sourcing:</strong> Opt for locally produced goods to minimize transportation emissions and support your community.</p>
+                            </div>
+                            <div class="tip-item">
+                                <p><strong>Repair & Reuse:</strong> Consider products that can be easily repaired or repurposed before disposal. Check for warranty and repair options.</p>
+                            </div>
+                            <div class="tip-item">
+                                <p><strong>Energy Efficiency:</strong> For electronics and appliances, check energy ratings and power consumption—more efficient models save money and resources.</p>
+                            </div>
+                            <div class="tip-item">
+                                <p><strong>Secondhand Options:</strong> Consider buying used or refurbished items which often have much lower environmental impact than new products.</p>
+                            </div>
+                            <div class="tip-item">
+                                <p><strong>Material Matters:</strong> Choose natural, renewable, or recycled materials over synthetic when possible (e.g., bamboo over plastic).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global chart instances to allow for destruction and recreation
+        let productAPieChartInstance;
+        let productBPieChartInstance;
+        let impactBarChartInstance;
+        let overallRadarChartInstance;
+
+        /**
+         * Updates the displayed value for a slider input.
+         * @param {string} sliderId - The ID of the slider input.
+         * @param {string} [suffix=''] - An optional suffix to append to the value (e.g., ' years').
+         */
+        function updateSliderValue(sliderId, suffix = '') {
+            const slider = document.getElementById(sliderId);
+            const valueDisplay = document.getElementById(sliderId + '-value');
+            if (slider && valueDisplay) {
+                valueDisplay.textContent = slider.value + suffix;
+            }
+        }
+
+        // Initialize slider values on page load
+        window.onload = function() {
+            updateSliderValue('materialA');
+            updateSliderValue('durabilityA', ' years');
+            updateSliderValue('materialB');
+            updateSliderValue('durabilityB', ' years');
+        };
+
+        /**
+         * Gathers input data for a given product.
+         * @param {string} prefix - The prefix for the product's input IDs (e.g., 'A' or 'B').
+         * @returns {object} An object containing the product's data.
+         */
+        function getProductData(prefix) {
+            const name = document.getElementById(`name${prefix}`).value || `Product ${prefix}`;
+            const price = parseFloat(document.getElementById(`price${prefix}`).value) || 0;
+            const shipping = parseFloat(document.getElementById(`shipping${prefix}`).value) || 0;
+            const packaging = parseFloat(document.getElementById(`packaging${prefix}`).value) || 0;
+            const material = parseFloat(document.getElementById(`material${prefix}`).value) || 0;
+            const durability = parseFloat(document.getElementById(`durability${prefix}`).value) || 0;
+
+            return { name, price, shipping, packaging, material, durability };
+        }
+
+        /**
+         * Calculates the sustainability score and estimated environmental impacts for a product.
+         * @param {object} productData - The data for the product.
+         * @returns {object} An object containing the score and impact metrics.
+         */
+        function calculateSustainabilityScore(productData) {
+            const { name, price, shipping, packaging, material, durability } = productData;
+
+            // Define weights for each factor (sum should be 1 for easy normalization)
+            const weights = {
+                shipping: 0.20,
+                packaging: 0.20,
+                material: 0.30,
+                durability: 0.20,
+                price: 0.10
+            };
+
+            // Normalize values to a 0-10 scale where higher is better for sustainability
+            const shippingScore = (shipping / 5) * 10;
+            const packagingScore = (packaging / 5) * 10;
+            const materialScore = material;
+            const durabilityScore = durability;
+            const maxPrice = 2000;
+            const normalizedPrice = Math.min(price / maxPrice * 10, 10);
+
+            // Overall sustainability score (out of 100)
+            const sustainabilityScore = (
+                (shippingScore * weights.shipping) +
+                (packagingScore * weights.packaging) +
+                (materialScore * weights.material) +
+                (durabilityScore * weights.durability) +
+                (normalizedPrice * weights.price)
+            ) * 10;
+
+            // Environmental Impact Estimation
+            const carbonFootprint = (100 - sustainabilityScore) * 0.5 + Math.random() * 20;
+            const waterUsage = (100 - sustainabilityScore) * 1.5 + Math.random() * 50;
+            const wasteGenerated = (100 - sustainabilityScore) * 0.1 + Math.random() * 5;
+            const recyclability = (packaging / 5) * 50 + (material / 10) * 50;
+
+            // Breakdown of carbon footprint
+            const carbonBreakdown = {
+                material: (10 - material) * 2,
+                shipping: (5 - shipping) * 3,
+                packaging: (5 - packaging) * 1.5,
+                durability: (10 - durability) * 2.5
+            };
+
+            return {
+                name,
+                score: Math.round(sustainabilityScore),
+                impact: {
+                    carbonFootprint: carbonFootprint.toFixed(2),
+                    waterUsage: waterUsage.toFixed(2),
+                    wasteGenerated: wasteGenerated.toFixed(2),
+                    recyclability: recyclability.toFixed(0)
+                },
+                breakdown: {
+                    shipping: shippingScore,
+                    packaging: packagingScore,
+                    material: materialScore,
+                    durability: durabilityScore,
+                    price: normalizedPrice
+                },
+                carbonBreakdown: carbonBreakdown
+            };
+        }
+
+        /**
+         * Returns a color from a green gradient based on a given score (0-10).
+         * Higher scores get darker, more vibrant greens.
+         * @param {number} score - The sustainability score for a segment (0-10).
+         * @returns {string} A hex color code.
+         */
+        function getColorForScore(score) {
+            if (score >= 9) return '#1B5E20';
+            if (score >= 7) return '#2E7D32';
+            if (score >= 5) return '#4CAF50';
+            if (score >= 3) return '#81C784';
+            if (score >= 1) return '#AED581';
+            return '#DCE775';
+        }
+
+        /**
+         * Renders a pie chart for sustainability breakdown.
+         * @param {string} canvasId - The ID of the canvas element.
+         * @param {object} breakdownData - The data for the breakdown.
+         * @param {string} label - Label for the chart.
+         * @returns {Chart} The Chart.js instance.
+         */
+        function renderPieChart(canvasId, breakdownData, label) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+
+            // Destroy existing chart instance if it exists
+            let existingChart = Chart.getChart(canvasId);
+            if (existingChart) {
+                existingChart.destroy();
+            }
+
+            const dataValues = [
+                breakdownData.shipping,
+                breakdownData.packaging,
+                breakdownData.material,
+                breakdownData.durability,
+                breakdownData.price
+            ];
+
+            // Dynamically generate background colors based on score intensity
+            const backgroundColors = dataValues.map(value => getColorForScore(value));
+            const hoverBackgroundColors = backgroundColors.map(color => Chart.helpers.color(color).lighten(0.1).rgbString());
+
+            return new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Shipping', 'Packaging', 'Material', 'Durability', 'Price Impact'],
+                    datasets: [{
+                        label: label,
+                        data: dataValues,
+                        backgroundColor: backgroundColors,
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        hoverOffset: 8,
+                        hoverBackgroundColor: hoverBackgroundColors,
+                        hoverBorderColor: '#ccc',
+                        hoverBorderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: {
+                                    size: 12
+                                },
+                                color: '#555',
+                                padding: 20
+                            }
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed.toFixed(1);
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            formatter: (value, ctx) => {
+                                let sum = 0;
+                                let dataArr = ctx.chart.data.datasets[0].data;
+                                dataArr.map(data => {
+                                    sum += data;
+                                });
+                                if (value > 0) {
+                                    let percentage = (value * 100 / sum).toFixed(1) + '%';
+                                    return percentage;
+                                }
+                                return '';
+                            },
+                            color: '#fff',
+                            font: {
+                                weight: 'bold',
+                                size: 12
+                            },
+                            textShadowColor: 'rgba(0,0,0,0.5)',
+                            textShadowBlur: 4,
+                            display: 'auto',
+                            offset: 8,
+                            padding: 0
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true
+                    },
+                    cutout: '60%'
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+
+        /**
+         * Renders a bar chart for environmental impact comparison.
+         * @param {string} canvasId - The ID of the canvas element.
+         * @param {object} impactA - Impact data for Product A.
+         * @param {object} impactB - Impact data for Product B.
+         * @param {string} nameA - Name of Product A.
+         * @param {string} nameB - Name of Product B.
+         * @returns {Chart} The Chart.js instance.
+         */
+        function renderBarChart(canvasId, impactA, impactB, nameA, nameB) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+
+            // Destroy existing chart instance if it exists
+            let existingChart = Chart.getChart(canvasId);
+            if (existingChart) {
+                existingChart.destroy();
+            }
+
+            return new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Carbon Footprint (kg CO2e)', 'Water Usage (Liters)', 'Waste Generated (kg)'],
+                    datasets: [
+                        {
+                            label: nameA,
+                            data: [impactA.carbonFootprint, impactA.waterUsage, impactA.wasteGenerated],
+                            backgroundColor: '#4CAF50',
+                            borderColor: '#388E3C',
+                            borderWidth: 1,
+                            borderRadius: 5
+                        },
+                        {
+                            label: nameB,
+                            data: [impactB.carbonFootprint, impactB.waterUsage, impactB.wasteGenerated],
+                            backgroundColor: '#FFC107',
+                            borderColor: '#FFA000',
+                            borderWidth: 1,
+                            borderRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14
+                                },
+                                color: '#555'
+                            }
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toFixed(2);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Environmental Impact',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                color: '#555'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 12
+                                },
+                                color: '#555'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+     /**  
+        function renderRadarChart(canvasId, scoreA, scoreB) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+
+            // Destroy existing chart instance if it exists
+            let existingChart = Chart.getChart(canvasId);
+            if (existingChart) {
+                existingChart.destroy();
+            }
+
+            return new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Shipping', 'Packaging', 'Material', 'Durability', 'Price Impact'],
+                    datasets: [
+                        {
+                            label: scoreA.name,
+                            data: [
+                                scoreA.breakdown.shipping,
+                                scoreA.breakdown.packaging,
+                                scoreA.breakdown.material,
+                                scoreA.breakdown.durability,
+                                scoreA.breakdown.price
+                            ],
+                            backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                            borderColor: '#4CAF50',
+                            pointBackgroundColor: '#4CAF50',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#4CAF50',
+                            borderWidth: 2
+                        },
+                        {
+                            label: scoreB.name,
+                            data: [
+                                scoreB.breakdown.shipping,
+                                scoreB.breakdown.packaging,
+                                scoreB.breakdown.material,
+                                scoreB.breakdown.durability,
+                                scoreB.breakdown.price
+                            ],
+                            backgroundColor: 'rgba(255, 193, 7, 0.2)',
+                            borderColor: '#FFC107',
+                            pointBackgroundColor: '#FFC107',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#FFC107',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14
+                                },
+                                color: '#555'
+                            }
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.r !== null) {
+                                        label += context.parsed.r.toFixed(1);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: '#ddd'
+                            },
+                            grid: {
+                                color: '#eee'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12
+                                },
+                                color: '#555'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 10,
+                            ticks: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+**/
+        /**
+         * Displays the comparison results in the UI.
+         * @param {object} productAData - Raw input data for Product A.
+         * @param {object} productBData - Raw input data for Product B.
+         * @param {object} scoreA - Calculated score and impact for Product A.
+         * @param {object} scoreB - Calculated score and impact for Product B.
+         */
+        function displayResults(productAData, productBData, scoreA, scoreB) {
+            const resultSection = document.getElementById('resultSection');
+            resultSection.style.display = 'block';
+
+            // Scroll to results
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+
+            // Determine the winner
+            let winnerName, winnerScore, winnerMessage;
+            if (scoreA.score > scoreB.score) {
+                winnerName = productAData.name;
+                winnerScore = scoreA.score;
+                winnerMessage = `Congratulations! ${productAData.name} is the more sustainable choice with an Eco-Score of ${scoreA.score}. This product performs better in key sustainability metrics compared to ${productBData.name}.`;
+            } else if (scoreB.score > scoreA.score) {
+                winnerName = productBData.name;
+                winnerScore = scoreB.score;
+                winnerMessage = `Excellent! ${productBData.name} is the more sustainable choice with an Eco-Score of ${scoreB.score}. This option has a lower environmental impact than ${productAData.name}.`;
+            } else {
+                winnerName = 'Both Products';
+                winnerScore = scoreA.score;
+                winnerMessage = `It's a tie! Both products have an Eco-Score of ${scoreA.score}. Consider other factors like price, brand ethics, or personal preferences for your final decision.`;
+            }
+
+            document.getElementById('winnerName').textContent = winnerName;
+            document.getElementById('winnerScore').textContent = winnerScore + "/100";
+            document.getElementById('winnerMessage').textContent = winnerMessage;
+
+            // Display detailed environmental impact for the winner (or average if tie)
+            const displayImpact = (scoreA.score >= scoreB.score) ? scoreA.impact : scoreB.impact;
+            const displayCarbonBreakdown = (scoreA.score >= scoreB.score) ? scoreA.carbonBreakdown : scoreB.carbonBreakdown;
+
+            document.getElementById('carbonImpact').textContent = `${displayImpact.carbonFootprint} kg CO2e`;
+            document.getElementById('waterImpact').textContent = `${displayImpact.waterUsage} L`;
+            document.getElementById('wasteImpact').textContent = `${displayImpact.wasteGenerated} kg`;
+            document.getElementById('recyclabilityImpact').textContent = `${displayImpact.recyclability}%`;
+
+            document.getElementById('carbonMaterial').textContent = `${displayCarbonBreakdown.material.toFixed(1)} kg`;
+            document.getElementById('carbonShipping').textContent = `${displayCarbonBreakdown.shipping.toFixed(1)} kg`;
+            document.getElementById('carbonPackaging').textContent = `${displayCarbonBreakdown.packaging.toFixed(1)} kg`;
+            document.getElementById('carbonDurability').textContent = `${displayCarbonBreakdown.durability.toFixed(1)} kg`;
+
+            // Render Charts
+            productAPieChartInstance = renderPieChart('productAPieChart', scoreA.breakdown, `${scoreA.name} Breakdown`);
+            productBPieChartInstance = renderPieChart('productBPieChart', scoreB.breakdown, `${scoreB.name} Breakdown`);
+            impactBarChartInstance = renderBarChart('impactBarChart', scoreA.impact, scoreB.impact, scoreA.name, scoreB.name);
+            overallRadarChartInstance = renderRadarChart('overallRadarChart', scoreA, scoreB);
+
+            // Calculate and display potential savings
+            const priceDiff = Math.abs(productAData.price - productBData.price);
+            const carbonDiff = Math.abs(parseFloat(scoreA.impact.carbonFootprint) - parseFloat(scoreB.impact.carbonFootprint));
+            const waterDiff = Math.abs(parseFloat(scoreA.impact.waterUsage) - parseFloat(scoreB.impact.waterUsage));
+
+            const costSavings = `₹${priceDiff.toFixed(2)}`;
+            const treeEquivalent = `${(carbonDiff * 0.05).toFixed(1)} trees`;
+            const waterSavings = `${waterDiff.toFixed(2)} L`;
+            const energySavings = `${(waterDiff * 0.001).toFixed(2)} kWh`;
+
+            document.getElementById('costSavings').textContent = costSavings;
+            document.getElementById('treeEquivalent').textContent = treeEquivalent;
+            document.getElementById('waterSavings').textContent = waterSavings;
+            document.getElementById('energySavings').textContent = energySavings;
+        }
+
+        /**
+         * Main function to compare products when the button is clicked.
+         */
+        function compareProducts() {
+            const productAData = getProductData('A');
+            const productBData = getProductData('B');
+
+            // Basic validation
+            if ((!productAData.name || productAData.price === 0) && (!productBData.name || productBData.price === 0)) {
+                alert('Please enter at least one complete product to compare');
+                return;
+            }
+
+            const scoreA = calculateSustainabilityScore(productAData);
+            const scoreB = calculateSustainabilityScore(productBData);
+
+            displayResults(productAData, productBData, scoreA, scoreB);
+        }
+    </script>
+</body>
+</html>

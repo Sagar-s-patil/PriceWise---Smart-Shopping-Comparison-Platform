@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PriceWise | AI-Powered Price Comparison</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #6c5ce7;
+        --primary-light: #a29bfe;
+        --dark: #2d3436;
+        --light: #f8f9fa;
+        --success: #00b894;
+        --danger: #d63031;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease-in-out;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--light);
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      header {
+        background: white;
+        padding: 1.5rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow-sm);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-light)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      nav {
+        display: flex;
+        gap: 2rem;
+      }
+
+      nav a {
+        text-decoration: none;
+        color: var(--dark);
+        font-weight: 500;
+        transition: var(--transition);
+        position: relative;
+        padding: 0.5rem 0;
+      }
+
+      nav a:hover {
+        color: var(--primary);
+      }
+
+      nav a::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--primary);
+        transition: var(--transition);
+      }
+
+      nav a:hover::after {
+        width: 100%;
+      }
+
+      .hero {
+        background: linear-gradient(
+            135deg,
+            rgba(108, 92, 231, 0.9),
+            rgba(162, 155, 254, 0.9)
+          ),
+          url("https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=1600&q=80")
+            no-repeat center center/cover;
+        color: white;
+        padding: 5rem 5%;
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .hero p {
+        font-size: 1.25rem;
+        max-width: 700px;
+        margin: 0 auto 3rem;
+        opacity: 0.9;
+      }
+
+      .search-container {
+        max-width: 700px;
+        margin: 0 auto;
+        position: relative;
+        display: flex;
+      }
+
+      .search-container input {
+        flex: 1;
+        padding: 1.25rem 2rem;
+        border: none;
+        border-radius: 50px 0 0 50px;
+        font-size: 1.1rem;
+        box-shadow: var(--shadow-lg);
+        transition: var(--transition);
+      }
+
+      .search-btn {
+        padding: 1.25rem 1.5rem;
+        border: none;
+        background: var(--primary);
+        color: white;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: var(--shadow-lg);
+      }
+
+      #voiceBtn {
+        background: var(--primary-light);
+        color: white;
+        border: none;
+        padding: 1.25rem 1.5rem;
+        font-size: 1.1rem;
+        transition: var(--transition);
+        cursor: pointer;
+      }
+
+      .search-btn:hover,
+      #voiceBtn:hover {
+        background: var(--primary);
+      }
+
+      .cards-container {
+        padding: 4rem 5%;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        position: relative;
+        border: 1px solid #eee;
+      }
+
+      .card:hover {
+        transform: scale(1.02);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: contain;
+        background: #f8f9fa;
+        padding: 2rem;
+        border-bottom: 1px solid #eee;
+      }
+
+      .card-content {
+        padding: 1.5rem;
+      }
+
+      .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        height: 3.3rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        margin-bottom: 0.5rem;
+      }
+
+      .rating {
+        font-size: 1rem;
+        color: #f1c40f;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .rating .gray {
+        color: #dcdde1;
+      }
+
+      .rating-value {
+        font-size: 0.9rem;
+        color: #555;
+        margin-left: 0.25rem;
+      }
+
+      .price-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .current-price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .stores {
+        margin-top: 1rem;
+      }
+
+      .store-btn {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background: #f8f9fa;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        width: 100%;
+      }
+
+      .store-btn:hover {
+        background: #e9ecef;
+      }
+
+      .store-price {
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      .wishlist-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: white;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .wishlist-btn:hover {
+        color: var(--danger);
+        transform: scale(1.1);
+      }
+
+      footer {
+        background:#8b8b8b;
+        color: white;
+        text-align: center;
+        padding: 2rem 5%;
+        margin-top: 3rem;
+      }
+
+      @media (max-width: 768px) {
+        header {
+          flex-direction: column;
+          gap: 1rem;
+          padding: 1rem 5%;
+        }
+
+        nav {
+          gap: 1rem;
+        }
+
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+
+        .hero p {
+          font-size: 1rem;
+        }
+
+        .cards-container {
+          grid-template-columns: 1fr;
+        }
+      }
+      .hot-deals-slider {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        background: white;
+        padding: 1rem 0;
+      }
+
+      .slide-track {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+        width: 100%;
+      }
+
+      .slide-track a {
+        flex: 0 0 100%;
+      }
+
+      .slide-track img {
+        width: 100%;
+        height: 200px;
+        object-fit: fill;
+        display: flex;
+        object-position: top center;
+        border-radius: 8px;
+      }
+
+      .slider-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 2rem;
+        background: rgba(0, 0, 0, 0.4);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        z-index: 2;
+        border-radius: 50%;
+      }
+
+      .slider-btn.left {
+        left: 10px;
+      }
+
+      .slider-btn.right {
+        right: 10px;
+      }
+
+      .slider-btn:hover {
+        background: rgba(0, 0, 0, 0.7);
+      }
+       * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--light); /* or #f5f5f5 if you prefer */
+  color: var(--dark);
+  line-height: 1.6;
+  overflow-x: hidden; /* optional: allow vertical scroll */
+}
+
+
+    /* Floating Chat Icon */
+    .chat-toggle-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+
+    /* Sidebar Chat */
+    .chat-sidebar {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 400px;
+      height: 100vh;
+      background-color: white;
+      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
+      transition: right 0.3s ease-in-out;
+      z-index: 999;
+    }
+
+    .chat-sidebar.active {
+      right: 0;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .chat-header {
+      padding: 16px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #eaeaea;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-weight: bold;
+    }
+
+    .header-info {
+      flex: 1;
+    }
+
+    .header-info h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .header-info p {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #666;
+      cursor: pointer;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+    }
+
+    .message {
+      max-width: 80%;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .bot-message {
+      background-color: white;
+      border-bottom-left-radius: 4px;
+      margin-right: auto;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-message {
+      background-color: #007bff;
+      color: white;
+      border-bottom-right-radius: 4px;
+      margin-left: auto;
+    }
+
+    .chat-input-container {
+      padding: 12px 16px;
+      border-top: 1px solid #eaeaea;
+      background-color: white;
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #ddd;
+      border-radius: 24px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .send-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .send-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .typing-indicator {
+      display: inline-flex;
+      padding: 10px 14px;
+      background-color: white;
+      border-radius: 18px;
+      border-bottom-left-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background-color: #666;
+      border-radius: 50%;
+      margin: 0 2px;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-4px); }
+    }
+
+    .faq-quick-questions {
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+
+    .faq-quick-questions button {
+      display: block;
+      width: 100%;
+      margin: 6px 0;
+      padding: 10px;
+      background-color: #eef4ff;
+      color: #007bff;
+      border: none; 
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .faq-quick-questions button:hover {
+      background-color: #d9e9ff;
+    }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">PriceWise</div>
+      <nav>
+        <a href="/compare"><i class="fas fa-search-dollar"></i> Compare</a>
+        <a href="/wishlist"><i class="fas fa-heart"></i> Wishlist</a>
+        <a href="/green"><i class="fas fa-leaf"></i> Sustainability Check</a>
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h1>Shop Smarter, Not Harder</h1>
+      <p>
+        Track prices across retailers to ensure you always get the best deal
+      </p>
+      <div class="search-container">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search for a product like 'iPhone 15'"
+        />
+        <button id="voiceBtn" title="Click to Speak">
+          <i class="fas fa-microphone"></i>
+        </button>
+        <button id="searchBtn" class="search-btn">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      <div style="text-align: center; margin-top: 2rem">
+      <label for="sortOrder" style="font-weight: 600">Sort by Price:</label>
+      <select
+        id="sortOrder"
+        style="
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          font-size: 1rem;
+          margin-left: 0.5rem;
+        "
+      >
+        <option value="">-- Select --</option>
+        <option value="low-to-high">Low to High</option>
+        <option value="high-to-low">High to Low</option>
+      </select>
+    </div>
+    </section>
+    <div>
+    <h2
+      style="
+        font-size: 24px;
+        font-weight: bold;
+        margin-top:10px;
+        margin-bottom: 10px;
+        color: #d32f2f;
+        text-align: center;
+      "
+    >
+      🔥 Hot Deals
+    </h2>
+    </div>
+
+    <div class="hot-deals-slider">
+      <button class="slider-btn left" onclick="moveSlide(-1)">&#10094;</button>
+      <div class="slide-track" id="slideTrack">
+        <a
+          href="https://www.flipkart.com/big-bachat-day-feb-25-store"
+          target="_blank"
+        >
+          <img
+            src="https://rukminim1.flixcart.com/fk-p-flap/1000/200/image/fb28e3e1d22e6da2.jpg?q=90"
+          />
+        </a>
+        <a
+          href="https://www.flipkart.com/furniture/beds-more/beds/pr?sid=wwe,7p7,4yf"
+          target="_blank"
+        >
+          <img
+            src="https://rukminim1.flixcart.com/fk-p-flap/1000/200/image/74f0ad81e44e6e6f.jpg?q=90"
+          />
+        </a>
+        <a
+          href="https://www.flipkart.com/travel/flights?param=TravelDT-HPW-HPW-Flyfk"
+          target="_blank"
+        >
+          <img
+            src="https://rukminim1.flixcart.com/fk-p-flap/1000/200/image/2ad9256d47bff7ca.jpg?q=90"
+          />
+        </a>
+        <a
+          href="https://www.flipkart.com/travel/flights?param=TravelDT-HPW-Roundtrip-booknow"
+          target="_blank"
+        >
+          <img
+            src="https://rukminim1.flixcart.com/fk-p-flap/1000/200/image/8ff8ffb16eac0db3.jpg?q=90"
+          />
+        </a>
+        <a href="https://www.amazon.in/l/96585507031/" target="_blank">
+          <img
+            src="https://images-eu.ssl-images-amazon.com/images/G/31/img22/CEPC/pd/69/PC_Hero_Asin_3000x1200---Prime-Blue._CB789864568_.jpg"
+            alt="Amazon Banner 1"
+           
+          />
+        </a>
+        <a
+          href="https://www.amazon.in/s/?i=apparel&bbn=1968120031"
+          target="_blank"
+        >
+          <img
+            src="https://images-eu.ssl-images-amazon.com/images/G/31/img2020/2025/PrimeDay/SSH/Leadup/Unrec/PC/Tshirts_PC-1._CB789976979_.jpg"
+            alt="Amazon Banner 2"
+            
+          />
+        </a>
+        <a href="https://www.amazon.in/l/207909168031/" target="_blank">
+          <img
+            src="https://images-eu.ssl-images-amazon.com/images/G/31/OHL/PD25/Payal/GW-Hero-Pc-01_GOLD._CB790067108_.jpg"
+            alt="Amazon Banner 3"
+           
+          />
+        </a>
+        <a
+          href="https://www.amazon.in/s/?i=shoes&rh=n%3A1983518031"
+          target="_blank"
+        >
+          <img
+            src="https://images-eu.ssl-images-amazon.com/images/G/31/img2020/2025/PrimeDay/SSH/Leadup/Unrec/PC/Sports_shoes_PC-1._CB789976979_.jpg"
+            alt="Amazon Banner 4"
+           
+          />
+        </a>
+        <a href="https://www.amazon.in/dp/B0CY5HVDS2/" target="_blank">
+          <img
+            src="https://images-eu.ssl-images-amazon.com/images/G/31/img24/Media/PD25/PC_Lead-Up_Asin_3000x1200-PS5._CB790067172_.jpg"
+            alt="Amazon Banner 5"
+            
+          />
+        </a>
+      </div>
+      <button class="slider-btn right" onclick="moveSlide(1)">&#10095;</button>
+    </div>
+    <div class="cards-container" id="resultsContainer">
+      <!-- Dynamic product cards will appear here -->
+    </div>
+    <!-- Floating Chat Button -->
+  <button id="chatToggleBtn" class="chat-toggle-button">💬</button>
+
+  <!-- Chat Sidebar -->
+  <div class="chat-sidebar" id="chatSidebar">
+    <div class="chat-container">
+      <div class="chat-header">
+        <div class="avatar">AI</div>
+        <div class="header-info">
+          <h3>Smart AI Assistant</h3>
+          <p>Ask me anything</p>
+        </div>
+        <button class="close-btn" onclick="toggleSidebar()">×</button>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="message bot-message">
+          Hello! I'm your Smart AI Assistant. What would you like to know?
+        </div>
+        <div class="faq-quick-questions">
+          <p style="font-weight: bold; margin-bottom: 8px;">FAQs:</p>
+          <button onclick="sendFAQ('How can I return a product?')">How can I return a product?</button>
+          <button onclick="sendFAQ('How can I get Prime Membership?')">How can I get Prime Membership?</button>
+          <button onclick="sendFAQ('How do I track my order?')">How do I track my order?</button>
+          <button onclick="sendFAQ('How much is shipping?')">How much is shipping?</button>
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Enter your question..." onkeypress="handleKeyPress(event)" />
+        <button class="send-button" onclick="handleSearch()">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+    <footer>© 2025 Price Wise • Smart Shopping Engine</footer>
+
+    <script>
+      let slideIndex = 0;
+      const slides = document.querySelectorAll(".slide-track a");
+
+      function moveSlide(direction) {
+        slideIndex = (slideIndex + direction + slides.length) % slides.length;
+        const track = document.getElementById("slideTrack");
+        track.style.transform = `translateX(-${slideIndex * 100}%)`;
+      }
+
+      // Auto scroll every 3 seconds
+      setInterval(() => moveSlide(1), 3000);
+      function performSearch() {
+        const query = document.getElementById("searchInput").value.trim();
+        const sortOrder = document.getElementById("sortOrder").value;
+
+        if (!query) return;
+
+        fetch(`/search_index?q=${encodeURIComponent(query)}`)
+          .then((res) => res.json())
+          .then((data) => {
+            const container = document.getElementById("resultsContainer");
+            container.innerHTML = "";
+
+            if (!data.products || data.products.length === 0) {
+              container.innerHTML = "<p>No products found.</p>";
+              return;
+            }
+
+            if (sortOrder === "low-to-high") {
+              data.products.sort((a, b) => a.price - b.price);
+            } else if (sortOrder === "high-to-low") {
+              data.products.sort((a, b) => b.price - a.price);
+            }
+
+            data.products.forEach((p) => {
+              if (!p.title || p.title.trim() === "" || p.price > 200000) return;
+              const card = document.createElement("div");
+              card.className = "card";
+              card.innerHTML = `
+                <img src="${p.image}" alt="${p.title}" class="product-image" />
+                <div class="card-content">
+                  <h3 class="card-title" title="${p.title}">${p.title}</h3>
+                  <div class="rating">
+                    ${"★".repeat(Math.round(p.rating || 4))}
+                    <span class="gray">${"★".repeat(
+                      5 - Math.round(p.rating || 4)
+                    )}</span>
+                    <span class="rating-value">(${p.rating || "4.0"})</span>
+                  </div>
+                  <div class="price-container">
+                    <span class="current-price">₹${p.price}</span>
+                  </div>
+                  <div class="stores">
+                    <button class="store-btn" onclick="window.open('${
+                      p.link
+                    }', '_blank')">
+                      <span>${p.platform}</span>
+                      <span class="store-price">₹${p.price}</span>
+                    </button>
+                  </div>
+                </div>`;
+              container.appendChild(card);
+            });
+          })
+          .catch((err) => {
+            console.error("Fetch error:", err);
+            document.getElementById("resultsContainer").innerHTML =
+              "<p>Error fetching results.</p>";
+          });
+      }
+
+      document
+        .getElementById("searchInput")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") performSearch();
+        });
+
+      document
+        .getElementById("searchBtn")
+        .addEventListener("click", performSearch);
+      document
+        .getElementById("sortOrder")
+        .addEventListener("change", performSearch);
+
+      // 🎤 Voice Recognition Logic
+      const voiceBtn = document.getElementById("voiceBtn");
+      const productInput = document.getElementById("searchInput");
+
+      if ("webkitSpeechRecognition" in window) {
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = "en-IN";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        voiceBtn.addEventListener("click", () => {
+          voiceBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+          recognition.start();
+        });
+
+        recognition.onresult = function (event) {
+          const transcript = event.results[0][0].transcript;
+          productInput.value = transcript;
+          document.getElementById("searchBtn").click();
+        };
+
+        recognition.onend = function () {
+          voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        };
+
+        recognition.onerror = function (event) {
+          console.error("Voice recognition error:", event.error);
+          voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        };
+      } else {
+        voiceBtn.disabled = true;
+        voiceBtn.title = "Voice search not supported in this browser";
+      }
+      function toggleSidebar() {
+  const sidebar = document.getElementById("chatSidebar");
+  const chatBtn = document.getElementById("chatToggleBtn");
+  
+  sidebar.classList.toggle("active");
+  
+  // Hide/show chat button based on sidebar state
+  if (sidebar.classList.contains("active")) {
+    chatBtn.style.display = "none";
+  } else {
+    chatBtn.style.display = "block";
+  }
+}
+
+    document.getElementById("chatToggleBtn").addEventListener("click", toggleSidebar);
+
+    function sendFAQ(question) {
+  const input = document.getElementById("chatInput");
+  input.value = question;
+  handleSearch();
+}
+
+    function addMessage(text, isUser) {
+      const chatMessages = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+      messageDiv.textContent = text;
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTyping() {
+      const chatMessages = document.getElementById('chatMessages');
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing-indicator';
+      typingDiv.id = 'typingIndicator';
+      typingDiv.innerHTML = `
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      `;
+      chatMessages.appendChild(typingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function hideTyping() {
+      const typing = document.getElementById('typingIndicator');
+      if (typing) typing.remove();
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') handleSearch();
+    }
+
+    async function handleSearch() {
+  const input = document.getElementById('chatInput');
+  const query = input.value.trim();
+  if (!query) return;
+
+  addMessage(query, true);
+  input.value = '';
+  showTyping();
+
+  try {
+    const res = await fetch("/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: query })
+    });
+    const data = await res.json();
+    const answer = data.answer;
+
+    const lines = answer.split('\n').filter(line => line.trim() !== '');
+    const shortAnswer = lines.length > 4 ? lines.slice(0, 4).join('\n') : answer;
+
+    hideTyping();
+    addMessage(shortAnswer, false);
+  } catch (error) {
+    hideTyping();
+    addMessage("❌ Sorry, something went wrong. Try again later.", false);
+  }
+}
+    </script>
+  </body>
+</html>
