@@ -2,17 +2,27 @@ import sqlite3
 import datetime
 import pytz
 import time
+import os
+from dotenv import load_dotenv
 from twilio.rest import Client
+
+# Load environment variables from .env file
+load_dotenv()
 
 DB_PATH = "users.db"
 
 def send_whatsapp(phone, title, platform):
-    account_sid = 'AC73e49b3c63c9a67ac6a0a2475ba96298'
-    auth_token = '7011fe68eb63139f1d49f306feafd96e'
+    # Get Twilio credentials from environment variables
+    account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+    auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+
+    if not account_sid or not auth_token:
+        raise ValueError("Twilio credentials not found. Please set them in your .env file.")
+
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(
-        from_='whatsapp:++14155238886',
+        from_='whatsapp:+14155238886',  # Twilio Sandbox WhatsApp number
         to=f'whatsapp:+91{phone}',
         body=f"⚠️ Hurry! The offer on *{title}* ({platform}) is expiring soon!"
     )
