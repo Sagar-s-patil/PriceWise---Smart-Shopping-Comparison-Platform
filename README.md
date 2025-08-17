@@ -56,11 +56,6 @@
 - Chrome or Chromium (for Playwright)
 - A virtual environment (recommended)
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/pricewise.git
-cd pricewise
 
 
 ## 🎥 Demo Video
